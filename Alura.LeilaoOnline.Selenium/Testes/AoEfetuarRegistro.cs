@@ -85,5 +85,37 @@ namespace LeilaoOnline.Testes
                 driver.FindElement(By.XPath("//h4[text()='Registre-se para participar dos leilões!']")).Text);
         }
 
+        [Fact]
+        public void DadoNomeEmBrancoDeveMostrarMensagemDeErro()
+        {
+            //arrange
+            driver.Navigate().GoToUrl("http://localhost:5000");
+
+            var buttonRegistrar = driver.FindElement(By.Id("btnRegistro"));
+
+            //act
+            buttonRegistrar.Click();
+
+            //assert
+            IWebElement elemento = driver.FindElement(By.Id("Nome-error"));
+            Assert.True(elemento.Displayed);
+        }
+
+        [Fact]
+        public void DadoEmailEmBrancoDeveMostrarMensagemDeErro()
+        {
+            //arrange
+            driver.Navigate().GoToUrl("http://localhost:5000");
+
+            var buttonRegistrar = driver.FindElement(By.Id("btnRegistro"));
+
+            //act
+            buttonRegistrar.Click();
+
+            //assert
+            IWebElement elemento = driver.FindElement(By.Id("Email-error"));
+            Assert.True(elemento.Displayed);
+        }
+
     }
 }
