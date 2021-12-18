@@ -98,18 +98,21 @@ namespace LeilaoOnline.Testes
 
             //assert
             IWebElement elemento = driver.FindElement(By.Id("Nome-error"));
-            Assert.True(elemento.Displayed);
+            Assert.Equal("The Nome field is required.", elemento.Text);
         }
 
         [Fact]
-        public void DadoEmailEmBrancoDeveMostrarMensagemDeErro()
+        public void DadoEmailInvalidoDeveMostrarMensagemDeErro()
         {
             //arrange
             driver.Navigate().GoToUrl("http://localhost:5000");
 
             var buttonRegistrar = driver.FindElement(By.Id("btnRegistro"));
 
+            var inputEmail = driver.FindElement(By.Id("Email"));
+
             //act
+            inputEmail.SendKeys("joabe");
             buttonRegistrar.Click();
 
             //assert
