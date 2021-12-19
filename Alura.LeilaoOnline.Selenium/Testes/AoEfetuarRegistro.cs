@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Text;
 using Alura.LeilaoOnline.Selenium.Fixtures;
 using System.Threading;
+using Alura.LeilaoOnline.Selenium.PageObjects;
 
 namespace LeilaoOnline.Testes
 {
@@ -12,6 +13,8 @@ namespace LeilaoOnline.Testes
     public class AoEfetuarRegistro
     {
         private IWebDriver driver;
+
+        RegistroPage registroPage;
 
         public AoEfetuarRegistro(TestFixture fixture)
         {
@@ -21,27 +24,18 @@ namespace LeilaoOnline.Testes
         [Fact]
         public void DadoInfoValidasDeveIrParaPaginaDeAgradecimento()
         {
-            //arrange - dado chrome aberto, página inicial do sist. de leilões,
+            //arrange - dado chrome aberto, página inicial do sist. de leilão
+            registroPage = new RegistroPage(driver);
+            registroPage.Visitar();
+
+            //act
             //dados de registro válidos informados
-            driver.Navigate().GoToUrl("http://localhost:5000");
+            registroPage.PreencherNome("Joabe");
+            registroPage.PreencherEmail("joabe@gmail.com");
+            registroPage.PreencherSenha("123");
+            registroPage.PreencherConfirmSenha("123");
 
-            var inputNome = driver.FindElement(By.Id("Nome"));
-
-            var inputEmail = driver.FindElement(By.Id("Email"));
-
-            var inputSenha = driver.FindElement(By.Id("Password"));
-
-            var inputConfirmaSenha = driver.FindElement(By.Id("ConfirmPassword"));
-
-            var buttonRegistrar = driver.FindElement(By.Id("btnRegistro"));
-
-            //act - efetuo o 
-            inputNome.SendKeys("Joabe");
-            inputEmail.SendKeys("joabe@gmail.com");
-            inputSenha.SendKeys("123");
-            inputConfirmaSenha.SendKeys("123");
-
-            buttonRegistrar.Click();
+            registroPage.ClicarRegistro();
 
             //assert - devo ser direcionado para uma página de agradecimento
             Assert.Contains("Obrigado", driver.FindElement(By.XPath("//h4[contains(text(), 'Obrigado')]")).Text);
@@ -58,30 +52,20 @@ namespace LeilaoOnline.Testes
             string senha,
             string confirmesenha)
         {
-            //arrange - dado chrome aberto, página inicial do sist. de leilões,
-            //dados de registro válidos informados
-            driver.Navigate().GoToUrl("http://localhost:5000");
+            //arrange
+            registroPage = new RegistroPage(driver);
+            registroPage.Visitar();
 
-            var inputNome = driver.FindElement(By.Id("Nome"));
+            //act
+            registroPage.PreencherNome(nome);
+            registroPage.PreencherEmail(email);
+            registroPage.PreencherSenha(senha);
+            registroPage.PreencherConfirmSenha(confirmesenha);
 
-            var inputEmail = driver.FindElement(By.Id("Email"));
+            registroPage.ClicarRegistro();
 
-            var inputSenha = driver.FindElement(By.Id("Password"));
-
-            var inputConfirmaSenha = driver.FindElement(By.Id("ConfirmPassword"));
-
-            var buttonRegistrar = driver.FindElement(By.Id("btnRegistro"));
-
-            //act - efetuo o 
-            inputNome.SendKeys(nome);
-            inputEmail.SendKeys(email);
-            inputSenha.SendKeys(senha);
-            inputConfirmaSenha.SendKeys(confirmesenha);
-
-            buttonRegistrar.Click();
-
-            //assert - devo ser direcionado para uma página de agradecimento
-            Assert.Contains("Registre-se para participar dos leilões!", 
+            //assert
+            Assert.Contains("Registre-se para participar dos leilões!",
                 driver.FindElement(By.XPath("//h4[text()='Registre-se para participar dos leilões!']")).Text);
         }
 
@@ -89,35 +73,35 @@ namespace LeilaoOnline.Testes
         public void DadoNomeEmBrancoDeveMostrarMensagemDeErro()
         {
             //arrange
-            driver.Navigate().GoToUrl("http://localhost:5000");
-
-            var buttonRegistrar = driver.FindElement(By.Id("btnRegistro"));
+            registroPage = new RegistroPage(driver);
+            registroPage.Visitar();
 
             //act
-            buttonRegistrar.Click();
+            registroPage.ClicarRegistro();
 
             //assert
-            IWebElement elemento = driver.FindElement(By.Id("Nome-error"));
-            Assert.Equal("The Nome field is required.", elemento.Text);
+            Assert.Equal("The Nome field is required.", registroPage.PegarTextoMensagemErroNome());
         }
 
         [Fact]
         public void DadoEmailInvalidoDeveMostrarMensagemDeErro()
         {
             //arrange
-            driver.Navigate().GoToUrl("http://localhost:5000");
+            registroPage = new RegistroPage(driver);
+            registroPage.Visitar();
 
-            var buttonRegistrar = driver.FindElement(By.Id("btnRegistro"));
-
-            var inputEmail = driver.FindElement(By.Id("Email"));
+            registroPage.PreencheFormulario(
+                nome: "",
+                email: "daniel",
+                senha: "",
+                confirmsenha: "");
 
             //act
-            inputEmail.SendKeys("joabe");
-            buttonRegistrar.Click();
+            registroPage.ClicarRegistro();
 
             //assert
-            IWebElement elemento = driver.FindElement(By.Id("Email-error"));
-            Assert.True(elemento.Displayed);
+            Assert.Equal("Please enter a valid email address.",
+                registroPage.PegarTextoMensagemErroEmail());
         }
 
     }

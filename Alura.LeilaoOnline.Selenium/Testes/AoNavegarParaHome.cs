@@ -1,5 +1,6 @@
 using Alura.LeilaoOnline.Selenium.Fixtures;
 using Alura.LeilaoOnline.Selenium.Helpers;
+using Alura.LeilaoOnline.Selenium.PageObjects;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using System;
@@ -15,6 +16,8 @@ namespace LeilaoOnline.Testes
 
         private IWebDriver driver;
 
+        RegistroPage registroPage;
+
         //Setup
         public AoNavegarParaHome(TestFixture fixture)
         {
@@ -25,9 +28,10 @@ namespace LeilaoOnline.Testes
         public void DadoChromeAbertoDeveMostrarLeilosNoTitulo()
         {
             //arange 
+            registroPage = new RegistroPage(driver);
+            registroPage.Visitar();
 
             //act
-            driver.Navigate().GoToUrl("http://localhost:5000");
 
             //assert
             Assert.Contains("Leilões", driver.Title);
@@ -37,9 +41,10 @@ namespace LeilaoOnline.Testes
         public void DadoChromeAbertoDeveMostrarProximosLeiloesNaPagina()
         {
             //arange
+            registroPage = new RegistroPage(driver);
+            registroPage.Visitar();
 
             //act
-            driver.Navigate().GoToUrl("http://localhost:5000");
 
             //assert
             Assert.Contains("Próximos Leilões", driver.PageSource);
@@ -49,9 +54,10 @@ namespace LeilaoOnline.Testes
         public void DadoChromeAbertoFormNaoDeveMensagensDeErro()
         {
             //arange 
+            registroPage = new RegistroPage(driver);
+            registroPage.Visitar();
 
             //act
-            driver.Navigate().GoToUrl("http://localhost:5000");
 
             //assert
             var form = driver.FindElement(By.TagName("form"));
