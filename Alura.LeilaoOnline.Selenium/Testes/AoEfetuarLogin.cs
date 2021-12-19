@@ -1,4 +1,5 @@
 ﻿using Alura.LeilaoOnline.Selenium.Fixtures;
+using Alura.LeilaoOnline.Selenium.PageObjects;
 using OpenQA.Selenium;
 using System;
 using System.Collections.Generic;
@@ -11,36 +12,47 @@ namespace LeilaoOnline.Testes
     public class AoEfetuarLogin
     {
         private IWebDriver driver;
+        LoginPage loginPage;
 
         public AoEfetuarLogin(TestFixture fixture)
         {
             driver = fixture.Driver;
         }
 
-        [Theory]
-        [InlineData("Joabe", "")]
-        [InlineData("", "123")]
-        [InlineData("", "")]
-        public void DadoInfoInvalidasDevePermancenerNaTelaDeLogin(
-            string usuario,
-            string senha)
+        [Fact]
+        public void DadoCredenciaisValidasDeveIrParaDashboard()
         {
             //arrange
-            driver.Navigate().GoToUrl("http://localhost:5000/Autenticacao/Login");
-
-            var inputUsuario = driver.FindElement(By.Id("Login"));
-            var inputSenha = driver.FindElement(By.Id("Password"));
-            var buttonLogin = driver.FindElement(By.Id("btnLogin"));
+            loginPage = new LoginPage(driver);
+            loginPage.Visitar();
 
             //act
-            inputUsuario.SendKeys(usuario);
-            inputSenha.SendKeys(senha);
-
-            buttonLogin.Click();
+            loginPage.PreencherFormulario("fulano@example.org", "123");
+            loginPage.SubmeteFormulario();
 
             //assert
-            Assert.Contains("Ainda não possui cadastro? ",
-                driver.FindElement(By.XPath("//p[text()='Ainda não possui cadastro? ']")).Text);
+            Assert.Contains("Dashboard", driver.Title);
+        }
+
+        [Theory]
+        [InlineData("","")]
+        [InlineData("fulano@example.org", "")]
+        [InlineData("", "123")]
+        public void DadoCredenciaisInvalidasDevePermanecerEmLogin(
+            string login,
+            string senha
+            )
+        {
+            //arrange
+            loginPage = new LoginPage(driver);
+            loginPage.Visitar();
+
+            //act
+            loginPage.PreencherFormulario(login, senha);
+            loginPage.SubmeteFormulario();
+
+            //assert
+            Assert.Contains("Login", driver.PageSource);
         }
 
     }
